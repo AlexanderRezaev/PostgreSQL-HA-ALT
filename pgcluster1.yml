@@ -32,7 +32,6 @@
 # see: systemd-cgls --no-pager 
 
       postgresql_packages:
-## ALT Linux (не понятно как указать конкретную версию)
         - postgresql14
         - postgresql14-server
         - postgresql14-contrib
