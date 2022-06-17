@@ -1,8 +1,9 @@
 <B>Установка с помощью ANSIBLE</B>
 
-<B>#Тестировалось на ALT Server Linux 10.1</B>
+<B># Тестировалось на ALT Server Linux 10.1</B>
 
 <B># Download: https://getalt.org/ru/alt-server/ </B>
+
 <B># Docs: https://www.altlinux.org </B>
 
 <B>#подготовка работы ansible. заполнение .ssh/known_hosts и выполнение ssh-copy-id</B><BR>
