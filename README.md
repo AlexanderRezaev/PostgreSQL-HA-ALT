@@ -1,6 +1,6 @@
 <B>Установка с помощью ANSIBLE</B>
 
-<B># Тестировалось на ALT Server Linux 10.1</B>
+<B># Тестировалось на ALT Server Linux 10.1</B><BR>
 #Единственный Linux с cgroups v2 где есть io.latency (который мне попался)<BR>
 
 <B># Download: https://getalt.org/ru/alt-server/ </B>
