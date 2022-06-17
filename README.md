@@ -45,3 +45,7 @@ ansible-playbook -i inv_pg_hosts1 --tags pg_profile_install pgcluster1.yml<BR>
 
 <B>#настройка шифрации сетевого трафика между серверами кластера</B><BR>
 ansible-playbook -i inv_pg_hosts1 --tags ipsec_install pgcluster1.yml<BR>
+
+
+<B># cgroups</B><BR>
+# Первый Linux с cgroups v2 где есть io.latency<BR>
