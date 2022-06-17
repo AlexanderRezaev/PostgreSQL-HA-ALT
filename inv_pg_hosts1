@@ -1,0 +1,14 @@
+[dcs_cluster]
+alt-h1 ansible_set_fqdn=alt-h1.lab.local ansible_set_ip=172.27.172.147 ansible_dcs_id=1 ansible_python_interpreter=/usr/bin/python3
+alt-h2 ansible_set_fqdn=alt-h2.lab.local ansible_set_ip=172.27.172.148 ansible_dcs_id=2 ansible_python_interpreter=/usr/bin/python3
+alt-h3 ansible_set_fqdn=alt-h3.lab.local ansible_set_ip=172.27.172.149 ansible_dcs_id=3 ansible_python_interpreter=/usr/bin/python3
+
+[postgresql_cluster]
+alt-h1 ansible_set_fqdn=alt-h1.lab.local ansible_set_ip=172.27.172.147 ansible_set_patroni_id=1 ansible_python_interpreter=/usr/bin/python3
+alt-h2 ansible_set_fqdn=alt-h2.lab.local ansible_set_ip=172.27.172.148 ansible_set_patroni_id=2 ansible_python_interpreter=/usr/bin/python3
+alt-h3 ansible_set_fqdn=alt-h3.lab.local ansible_set_ip=172.27.172.149 ansible_set_patroni_id=3 ansible_python_interpreter=/usr/bin/python3
+
+[ipsec_enable]
+alt-h1 ansible_set_fqdn=alt-h1.lab.local ansible_set_ip=172.27.172.147 ansible_python_interpreter=/usr/bin/python3
+alt-h2 ansible_set_fqdn=alt-h2.lab.local ansible_set_ip=172.27.172.148 ansible_python_interpreter=/usr/bin/python3
+alt-h3 ansible_set_fqdn=alt-h3.lab.local ansible_set_ip=172.27.172.149 ansible_python_interpreter=/usr/bin/python3

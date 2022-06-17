@@ -1,0 +1,101 @@
+---
+  - hosts: [dcs_cluster,postgresql_cluster]
+    become: yes
+    any_errors_fatal: true
+
+    vars:
+
+#      ansible_python_interpreter: /usr/bin/python3
+
+      installation: online
+      cgroups: true
+      cgroups_version: "v1"
+
+      DCS: etcd3    # may be : etcd, etcd3, consul, zookeeper, exhibitor, kubernetes, raft
+#      DCS: zookeeper    # may be : etcd, etcd3, consul, zookeeper, exhibitor, kubernetes, raft
+
+      zookeeper_version: '3.6.3'
+      zookeeper_src: "/root/packages/zookeeper/apache-zookeeper-{{ zookeeper_version }}-bin.tar.gz"
+      zookeeper_service: zookeeper
+      zookeeper_cgroups: false
+# see: zoo
+
+      etcd3_version: '3.3.25'
+      etcd3_src: "/root/packages/etcd3/etcd-v{{ etcd3_version }}-linux-amd64.tar.gz"
+      etcd3_cgroups: true
+# see: etcdctl cluster-health
+
+      postgresql_version: "14"
+      postgresql_src: "/root/packages/postgres/PG{{ postgresql_version }}"
+      postgresql_port: 5434
+      postgresql_cgroups: true
+# see: systemd-cgls --no-pager 
+
+      postgresql_packages:
+## ALT Linux (не понятно как указать конкретную версию)
+        - postgresql14
+        - postgresql14-server
+        - postgresql14-contrib
+        - postgresql14-perl
+
+      install_pgagent: true
+      install_pgbouncer: true
+      install_pgpool: true
+
+      postgresql_addendum_version:
+        - pgagent
+        - pgpool-II
+
+      postgresql_addendum_common:
+        - pgbouncer
+
+      postgresql_on_mounted_disk: false
+
+      postgresql_pgpool_password: P@ssw0rd
+
+      postgresql_hba:
+        - { type: '#host', database: all,         user: foo,     address: '0.0.0.0/0',      method: reject }
+        - { type: host,    database: all,         user: foo,     address: '0.0.0.0/0',      method: md5    }
+#        - { type: host,    database: all,         user: pgpool,  address: '0.0.0.0/0',      method: md5    }
+#        - { type: host,    database: all,         user: pgagent, address: '127.0.0.1/32',   method: md5    }
+        - { type: local,   database: all,         user: all,     address: '',               method: peer,   tag: 'unix socket' }
+        - { type: host,    database: all,         user: all,     address: '127.0.0.1/32',   method: ident  }
+        - { type: host,    database: all,         user: all,     address: '::1/128',        method: ident,  tag: 'IPv6' }
+        - { type: local,   database: replication, user: all,     address: '',               method: peer,   tag: 'unix socket' }
+        - { type: host,    database: replication, user: all,     address: '127.0.0.1/32',   method: ident  }
+        - { type: host,    database: replication, user: all,     address: '::1/128',        method: ident,  tag: 'IPv6' }
+        - { type: host,    database: all,         user: all,     address: 'all',            method: md5 }
+#        - { type: host,    database: all,         user: all,     address: '0.0.0.0/0',      method: 'ldap ldapserver="lab-dc.lab.local lab-dc.lab.local" ldapprefix="" ldapsuffix="@LAB.LOCAL"',  tag: 'LDAP Authentification' }
+
+      psycopg_version: 3
+      patroni_version: 2.1.2
+      patroni_src: "/root/packages/patroni/{{ patroni_version }}"
+
+      patroni_namespace: "/patroni"
+      patroni_scope: "alt-cls"
+      patroni_fqdn: "alt-cls.lab.local"
+      patroni_cluster_ip: "172.27.172.200"
+      patroni_admin_login:      "clsadmin"
+      patroni_admin_password:   "P@ssw0rd"
+      patroni_replica_login:    "clsreplica"
+      patroni_replica_password: "P@ssw0rd"
+
+      patroni_log: /var/log/patroni/patroni.log
+      patroni_packages:
+#         - patroni-*
+
+      pg_profile_package:
+        - pg_profile--0.3.4.tar.gz
+
+    roles:
+
+      - install-cgroups
+      - install-ipsec
+      - install-zookeeper
+      - install-etcd3
+      - install-postgres
+      - install-pgpool
+      - install-pgbouncer
+      - install-patroni
+      - install-pg_profile
+      - install-ipsec

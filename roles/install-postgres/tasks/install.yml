@@ -1,0 +1,264 @@
+---
+- local_action: command hostname
+  register: hst
+  run_once: true
+  tags: [postgres_install]
+
+- name: Notify SysLog | {{ playbook_dir | basename }} role={{ role_name }} inventory={{ inventory_file }} tag={{ ansible_run_tags }}
+  shell: logger -t {{ hst.stdout }} "ansible playbook started  {{ playbook_dir }} role={{ role_name }} inventory={{ inventory_file }} tag={{ ansible_run_tags }}"
+  tags: [postgres_install]
+
+- name: Check all servers PostgreSQL are available
+  vars:
+    HOST_RUN_COUNT: "{{ ansible_play_batch | length }}"
+    HOST_ALL_COUNT: "{{ ansible_play_hosts | length }}"
+  ansible.builtin.debug:
+    msg: "{{ HOST_ALL_COUNT }} != {{ HOST_RUN_COUNT }} - configuring must be performed on ALL machines only"
+  failed_when: HOST_ALL_COUNT != HOST_RUN_COUNT
+  tags: [postgres_install]
+
+- debug: msg="{{ ansible_distribution }}"
+
+- name: install chrony
+  package: name=chrony state=present
+  tags: [postgres_install]
+
+- name: chronyd service start
+  service: name=chronyd state=started enabled=yes
+  tags: [postgres_install]
+
+- name: install mutt package in linux
+  package: name=mutt state=present
+  tags: [postgres_install]
+
+- name: online installation on ALT Server
+  block:
+
+  - name: Install openssl
+    apt_rpm:
+      name: openssl
+      state: present
+      update_cache: yes
+    tags: [postgres_install]
+
+  - name: Install PostgreSQL packages on ALT Server
+    apt_rpm:
+      name: "{{ item }}"
+      state: present
+      update_cache: yes
+    loop: "{{ postgresql_packages }}"
+    tags: [postgres_install]
+
+  - name: Install Addendum common packages on ALT Server
+    apt_rpm:
+      name: "{{ item }}"
+      state: present
+      update_cache: yes
+    loop: "{{ postgresql_addendum_common }}"
+#    when: install_pgagent == true or install_pgbouncer == true or install_pgpool == true
+    ignore_errors: yes
+    tags: [postgres_install]
+
+  - name: Install Addendum version packages on ALT Server
+    apt_rpm:
+      name: "{{ item }}"
+      state: present
+      update_cache: yes
+    loop: "{{ postgresql_addendum_version }}"
+#    when: install_pgagent == true or install_pgbouncer == true or install_pgpool == true
+    ignore_errors: yes
+    tags: [postgres_install]
+
+  when: installation == 'online' and (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
+
+
+- name: Check if PostgreSQL database is initialized.
+  stat:
+    path: "{{ postgresql_data_dir }}/PG_VERSION"
+  register: pgdata_dir_version
+  tags: [postgres_install]
+
+
+- name: set shell for postgres
+  shell: usermod --shell /bin/bash postgres
+  args:
+     warn: no
+  when: (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
+  tags: [postgres_install]
+
+
+- name: initializing                     
+  block:
+
+  - name: PostgreSQL database initializing..
+    shell: "sudo -iu postgres initdb --data-checksums --encoding=UTF8 --pgdata={{ postgresql_data_dir }} --waldir={{ postgresql_wal_dir }}"
+    when: not pgdata_dir_version.stat.exists and postgresql_on_mounted_disk == true
+    args:
+      warn: no
+    tags: [postgres_install]
+
+  - name: PostgreSQL database initializing..
+    shell: "sudo -iu postgres initdb --data-checksums --encoding=UTF8 --pgdata={{ postgresql_data_dir }} --waldir={{ postgresql_wal_dir }}"
+    when: not pgdata_dir_version.stat.exists and postgresql_on_mounted_disk == false
+    args:
+      warn: no
+    tags: [postgres_install]
+
+  - name: cgroups configuring /lib/systemd/system/postgresql.service
+    command: sed -i '/\[Service\]/a Delegate=cpu memory io' /lib/systemd/system/postgresql.service
+    when: not pgdata_dir_version.stat.exists and postgresql_cgroups == true
+    args:
+      warn: no
+    tags: [postgres_install]
+
+  - name: cgroups configuring /lib/systemd/system/postgresql.service
+    command: sed -i '/\[Service\]/a Slice=postgresql.slice' /lib/systemd/system/postgresql.service
+    when: not pgdata_dir_version.stat.exists and postgresql_cgroups == true
+    args:
+      warn: no
+    tags: [postgres_install]
+
+  when: (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
+
+
+# нужно смонтировать postgresql_root_dir=/var/lib/pgsql на диск /dev/postgresql_data_vg/pg_data
+# тогда можно будет rm -rf /var/lib/pgsql/data
+
+- block:
+
+  - name: check disk data mounted {{ postgresql_data_dir }}
+    shell: mountpoint {{ postgresql_data_dir }}
+    register: check_mount
+    vars:
+      mntp: "{{ postgresql_data_dir }} is a mountpoint"
+    failed_when: check_mount.stdout == mntp
+
+  - name: Create dir /pg_data
+    file:
+      path: "/pg_data"
+      state: directory
+      owner: postgres
+      group: postgres
+      mode: 0700
+
+  - name: mount disk data {{ postgresql_data_dev }} to /pg_data
+    mount:
+      src: "{{ postgresql_data_dev }}"
+      path: "/pg_data"
+      fstype: xfs
+      state: mounted
+#      opts: rw,noatime,async,barrier=0,data=writeback,commit=60
+
+  - name: set permission
+    file:
+      path: "/pg_data"
+      state: directory
+      owner: postgres
+      group: postgres
+      mode: 0700
+
+# ???
+  - name: move data from {{ postgresql_data_dir }} to /pg_data/data
+    shell: "mv {{ postgresql_data_dir }} /pg_data/"
+    args:
+      warn: no
+
+# ln -s /pg_data/data/ /var/lib/pgsql/13/data
+#       postgresql_data_dir: "/var/lib/pgsql/{{ postgresql_version }}/data"
+
+  - name: create link
+    file:
+      src: "/pg_data/data"
+      dest: "{{ postgresql_data_dir }}"
+      state: link
+      owner: postgres
+      group: postgres
+
+
+  - name: check disk wal mounted {{ postgresql_wal_dir }}
+    shell: mountpoint {{ postgresql_wal_dir }}
+    register: check_mount
+    vars:
+      mntp: "{{ postgresql_wal_dir }} is a mountpoint"
+    failed_when: check_mount.stdout == mntp
+
+  - name: Create dir /pg_wal
+    file:
+      path: "/pg_wal"
+      state: directory
+      owner: postgres
+      group: postgres
+      mode: 0700
+
+  - name: mount disk wal {{ postgresql_wal_dev }} to /pg_wal
+    mount:
+      src: "{{ postgresql_wal_dev }}"
+      path: "/pg_wal"
+      fstype: xfs
+      state: mounted
+#      opts: rw,noatime,async,barrier=0,data=writeback,commit=60
+
+  - name: set permission
+    file:
+      path: "/pg_wal"
+      state: directory
+      owner: postgres
+      group: postgres
+      mode: 0700
+
+  - name: move data from {{ postgresql_wal_dir }} to /pg_wal/wal
+    shell: "mv {{ postgresql_wal_dir }} /pg_wal/wal"
+    args:
+      warn: no
+
+  - name: create link
+    file:
+      src: "/pg_wal/wal"
+      dest: "{{ postgresql_wal_dir }}"
+      state: link
+      owner: postgres
+      group: postgres
+
+#  - name: move directory /var/lib/pgsql/{{ postgresql_version }}/backups
+#    shell: "mv /var/lib/pgsql/{{ postgresql_version }}/backups /var/lib/pgsql/"
+#    args:
+#      warn: no
+
+#  - name: remove directory /var/lib/pgsql/{{ postgresql_version }}/data
+#    file:
+#      path: "/var/lib/pgsql/{{ postgresql_version }}/data"
+#      state: absent
+
+  - name: escaped
+    set_fact: pgdatdir_escaped="{{ postgresql_data_dir | regex_replace ('/','\/') }}"
+
+  - name: change /usr/lib/systemd/system/postgresql-{{ postgresql_version }}.service
+    shell: sed -i 's/\/var\/lib\/pgsql\/{{ postgresql_version }}\/data/{{ pgdatdir_escaped }}/' /usr/lib/systemd/system/postgresql-{{ postgresql_version }}.service
+    args:
+      warn: no
+
+  when: not pgdata_dir_version.stat.exists and postgresql_on_mounted_disk is defined and postgresql_on_mounted_disk == true
+  tags: [postgres_install]
+
+- name: PGPORT configuring /lib/systemd/system/postgresql.service
+  command: sed -i 's/Environment=PGPORT=5432/Environment=PGPORT={{ postgresql_port }}/' /lib/systemd/system/postgresql.service
+  args:
+    warn: no
+  when: (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
+  tags: [postgres_install]
+
+
+#- name: postgresql cgroups config
+#  template: src=postgresql.cgroup.j2 dest=/etc/cgconfig.d/postgresql.conf
+#  tags: [postgres_install]
+
+
+#- name: Recursively remove directory /tmp/pg
+#  file:
+#    path: /tmp/pg
+#    state: absent
+#  tags: [postgres_install]
+
+- name: Notify SysLog | {{ playbook_dir | basename }} role={{ role_name }} inventory={{ inventory_file }} tag={{ ansible_run_tags }}
+  shell: logger -t {{ hst.stdout }} "ansible playbook finished {{ playbook_dir }} role={{ role_name }} inventory={{ inventory_file }} tag={{ ansible_run_tags }}"
+  tags: [postgres_install]
