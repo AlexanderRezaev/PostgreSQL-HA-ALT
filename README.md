@@ -48,4 +48,4 @@ ansible-playbook -i inv_pg_hosts1 --tags ipsec_install pgcluster1.yml<BR>
 
 
 <B># cgroups</B><BR>
-# Первый Linux с cgroups v2 где есть io.latency<BR>
+#Первый Linux с cgroups v2 где есть io.latency<BR>
