@@ -1,6 +1,7 @@
 <B>Установка с помощью ANSIBLE</B>
 
 <B># Тестировалось на ALT Server Linux 10.1</B>
+#Единственный Linux с cgroups v2 где есть io.latency (который мне попался)<BR>
 
 <B># Download: https://getalt.org/ru/alt-server/ </B>
 
@@ -45,7 +46,3 @@ ansible-playbook -i inv_pg_hosts1 --tags pg_profile_install pgcluster1.yml<BR>
 
 <B>#настройка шифрации сетевого трафика между серверами кластера</B><BR>
 ansible-playbook -i inv_pg_hosts1 --tags ipsec_install pgcluster1.yml<BR>
-
-
-<B># cgroups</B><BR>
-#Первый Linux с cgroups v2 где есть io.latency<BR>
