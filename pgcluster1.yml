@@ -14,10 +14,12 @@
       DCS: etcd3    # may be : etcd, etcd3, consul, zookeeper, exhibitor, kubernetes, raft
 #      DCS: zookeeper    # may be : etcd, etcd3, consul, zookeeper, exhibitor, kubernetes, raft
 
+      dcs_on_mounted_disk: true
+
       zookeeper_version: '3.6.3'
       zookeeper_src: "/root/packages/zookeeper/apache-zookeeper-{{ zookeeper_version }}-bin.tar.gz"
       zookeeper_service: zookeeper
-      zookeeper_cgroups: false
+      zookeeper_cgroups: true
 # see: zoo
 
       etcd3_version: '3.3.25'
@@ -32,6 +34,7 @@
 # see: systemd-cgls --no-pager 
 
       postgresql_packages:
+## ALT Linux (не понятно как указать конкретную версию)
         - postgresql14
         - postgresql14-server
         - postgresql14-contrib
@@ -48,7 +51,7 @@
       postgresql_addendum_common:
         - pgbouncer
 
-      postgresql_on_mounted_disk: false
+      postgresql_on_mounted_disk: true
 
       postgresql_pgpool_password: P@ssw0rd
 

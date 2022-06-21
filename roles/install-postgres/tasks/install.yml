@@ -126,12 +126,12 @@
 
 - block:
 
-  - name: check disk data mounted {{ postgresql_data_dir }}
-    shell: mountpoint {{ postgresql_data_dir }}
+  - name: check disk data mounted {{ postgresql_data_dev }} as /pg_data
+    shell: mountpoint /pg_data
     register: check_mount
     vars:
-      mntp: "{{ postgresql_data_dir }} is a mountpoint"
-    failed_when: check_mount.stdout == mntp
+      mntp: "/pg_data is a mountpoint"
+#    failed_when: check_mount.stdout == mntp
 
   - name: Create dir /pg_data
     file:
@@ -175,12 +175,12 @@
       group: postgres
 
 
-  - name: check disk wal mounted {{ postgresql_wal_dir }}
-    shell: mountpoint {{ postgresql_wal_dir }}
+  - name: check disk wal mounted {{ postgresql_wal_dev }} as /pg_wal
+    shell: mountpoint /pg_wal
     register: check_mount
     vars:
-      mntp: "{{ postgresql_wal_dir }} is a mountpoint"
-    failed_when: check_mount.stdout == mntp
+      mntp: "/pg_wal is a mountpoint"
+#    failed_when: check_mount.stdout == mntp
 
   - name: Create dir /pg_wal
     file:
@@ -194,9 +194,9 @@
     mount:
       src: "{{ postgresql_wal_dev }}"
       path: "/pg_wal"
-      fstype: xfs
+      fstype: ext4
       state: mounted
-#      opts: rw,noatime,async,barrier=0,data=writeback,commit=60
+      opts: rw,noatime,async,barrier=0,data=writeback,commit=60
 
   - name: set permission
     file:
@@ -232,8 +232,8 @@
   - name: escaped
     set_fact: pgdatdir_escaped="{{ postgresql_data_dir | regex_replace ('/','\/') }}"
 
-  - name: change /usr/lib/systemd/system/postgresql-{{ postgresql_version }}.service
-    shell: sed -i 's/\/var\/lib\/pgsql\/{{ postgresql_version }}\/data/{{ pgdatdir_escaped }}/' /usr/lib/systemd/system/postgresql-{{ postgresql_version }}.service
+  - name: change /lib/systemd/system/postgresql.service
+    shell: sed -i 's/\/var\/lib\/pgsql\/data/{{ pgdatdir_escaped }}/' /lib/systemd/system/postgresql.service
     args:
       warn: no
 

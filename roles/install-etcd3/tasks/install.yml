@@ -14,7 +14,6 @@
     name: chrony
     state: present
 
-
 - name: install if exists ioping & moreutils
   block:
 
@@ -30,6 +29,30 @@
 
   when: (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
 
+- name: EPEL Repo
+  yum:
+    name: epel-release
+    state: latest
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Rocky'
+
+#- name: EPEL Repo
+#  shell: dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+#  args:
+#    warn: no
+#  when: ansible_distribution == 'RedHat' or ansible_distribution == 'OracleLinux'
+
+- name: install ioping
+  package:
+    name: ioping
+    state: present
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Rocky'
+
+- name: install moreutils package in CentOS
+  shell: dnf --enablerepo=powertools install moreutils -y
+  args:
+    warn: no
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Rocky'
+
 - name: Ensure group "etcd" exists
   group:
     name: etcd
@@ -42,6 +65,43 @@
     comment: etcd service
     group: etcd
     state: present
+
+- name: dcs on mounted disk
+  block:
+
+  - name: check disk dcs mounted /dcs
+    shell: mountpoint '/dcs'
+    register: check_mount
+    vars:
+      mntp: "/dcs is a mountpoint"
+#    failed_when: check_mount.stdout == mntp
+
+  - name: Create dir /dcs
+    file:
+      path: "/dcs"
+      state: directory
+      owner: etcd
+      group: etcd
+      mode: 0700
+#    ignore_errors: true
+
+  - name: mount disk dcs to /dcs
+    mount:
+      src: "{{ dcs_dev }}"
+      path: "/dcs"
+      fstype: ext4
+      state: mounted
+      opts: rw,noatime,async,barrier=0,data=writeback,commit=60
+
+  - name: set permission
+    file:
+      path: "/dcs"
+      state: directory
+      owner: etcd
+      group: etcd
+      mode: 0700
+
+  when: dcs_on_mounted_disk == true
 
 - name: offline installation
   block:
@@ -132,6 +192,7 @@
     owner: etcd
     group: etcd
 
+#ansible_etcd_data_dir: '/var/lib/etcd'
 - name: create dir data
   file:
     path: "{{ ansible_etcd_data_dir }}"
@@ -139,6 +200,28 @@
     owner: etcd
     group: etcd
     mode: 0700
+  when: dcs_on_mounted_disk == false
+
+#ansible_etcd_data_dir: '/dcs/etcd'
+- block:
+
+  - name: create dir data
+    file:
+      path: "/dcs/etcd"
+      state: directory
+      owner: etcd
+      group: etcd
+      mode: 0700
+
+  - name: Create a symbolic link /var/lib/etcd
+    file:
+      src: "/dcs/etcd"
+      dest: '/var/lib/etcd'
+      owner: etcd
+      group: etcd
+      state: link
+
+  when: dcs_on_mounted_disk == true
 
 - name: Configure /etc/hosts. Comment on 127.0.1.1
   lineinfile:
@@ -167,6 +250,10 @@
     group: etcd
     mode: 0600
   with_items: "{{ groups['dcs_cluster'] }}"
+
+- name: systemd unit file
+  template: src=etcd.service dest=/usr/lib/systemd/system/etcd.service owner=root group=root mode=0600
+  when: (ansible_distribution != 'ALT Server' and ansible_distribution != 'Altlinux')
 
 - name: systemd unit file on ALT
   template: src=etcd.service dest=/lib/systemd/system/etcd.service owner=root group=root mode=0600
@@ -202,7 +289,7 @@
 
 - name: daemon reload on ALT
   command: /usr/bin/systemctl daemon-reload
-  when: (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
+#  when: (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
 
 - name: etcd service
   service: name=etcd state=started enabled=yes
@@ -214,21 +301,11 @@
     state: present
     create: yes
 
-- name: pause 30 seconds
+- name: pause 10 seconds
   pause:
-    seconds: 30
+    seconds: 10
   run_once: true
 
-- debug: msg="/usr/local/bin/etcdctl cluster-health"
-  run_once: true
-
-- name: Current ETCD Cluster
-  shell: /usr/local/bin/etcdctl cluster-health
-  register: etcd_config
-  run_once: true
-
-- debug: var=etcd_config.stdout_lines
-  run_once: true
 
 - name: cgroup
   block:
@@ -250,6 +327,29 @@
     run_once: true
 
   when: cgroups == true
+
+
+- debug: msg="/usr/local/bin/etcdctl member list"
+  run_once: true
+
+- name: Current ETCD Cluster
+  shell: /usr/local/bin/etcdctl member list
+  register: etcd_config
+  run_once: true
+
+- debug: var=etcd_config.stdout_lines
+  run_once: true
+
+- debug: msg="/usr/local/bin/etcdctl cluster-health"
+  run_once: true
+
+- name: Current ETCD Cluster
+  shell: /usr/local/bin/etcdctl cluster-health
+  register: etcd_health
+  run_once: true
+
+- debug: var=etcd_health.stdout_lines
+  run_once: true
 
 
 - name: Notify SysLog | {{ playbook_dir | basename }} role={{ role_name }} inventory={{ inventory_file }} tag={{ ansible_run_tags }}
