@@ -276,7 +276,7 @@
     group: etcd
 
 - name: cgroups configuring /lib/systemd/system/etcd.service
-  command: sed -i '/\[Service\]/a Delegate=cpu memory io' /lib/systemd/system/etcd.service
+  command: sed -i '/^\[Service\]/a Delegate=cpu memory io' /lib/systemd/system/etcd.service
   when: etcd3_cgroups == true
   args:
     warn: no

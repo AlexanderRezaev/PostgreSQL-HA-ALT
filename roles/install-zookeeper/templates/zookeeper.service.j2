@@ -7,7 +7,7 @@ After=network.target time-sync.target
 [Service]
 {% if zookeeper_cgroups == true %}
 Slice=critical.slice
-Delegate = cpu io
+Delegate = cpu memory io
 {% endif %}
 Type=forking
 SyslogIdentifier={{ zookeeper_service }}
