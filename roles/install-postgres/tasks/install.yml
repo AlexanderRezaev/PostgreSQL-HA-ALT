@@ -111,12 +111,12 @@
       warn: no
     tags: [postgres_install]
 
-  - name: cgroups configuring /lib/systemd/system/postgresql.service
-    command: sed -i '/\[Service\]/a Slice=critical.slice' /lib/systemd/system/postgresql.service
-    when: not pgdata_dir_version.stat.exists and postgresql_cgroups == true
-    args:
-      warn: no
-    tags: [postgres_install]
+#  - name: cgroups configuring /lib/systemd/system/postgresql.service
+#    command: sed -i '/^\[Service\]/a Slice=critical.slice' /lib/systemd/system/postgresql.service
+#    when: not pgdata_dir_version.stat.exists and postgresql_cgroups == true
+#    args:
+#      warn: no
+#    tags: [postgres_install]
 
   when: (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
 
