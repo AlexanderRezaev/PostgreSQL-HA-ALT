@@ -10,6 +10,6 @@ for h in $hList
 do
 $(touch ${pgpathlog}/postgresql-${wd}-${h}.csv)
 $(chmod 600 ${pgpathlog}/postgresql-${wd}-${h}.csv)
-$(chown 999:999 ${pgpathlog}/postgresql-${wd}-${h}.csv)
+$(chown postgres:postgres ${pgpathlog}/postgresql-${wd}-${h}.csv)
 done
 done
