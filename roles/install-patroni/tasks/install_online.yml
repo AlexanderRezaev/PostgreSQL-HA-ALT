@@ -169,9 +169,10 @@
 
   - name: update pip3
     shell: pip3 install --upgrade pip && hash -d pip3
+    ignore_errors: yes
     tags: [patroni_install]
 
-  - name:	update setuptools
+  - name: update setuptools
     shell: pip3 install --upgrade setuptools
     tags: [patroni_install]
 
@@ -186,12 +187,12 @@
     tags: [patroni_install]
 
   - name: install patroni
-    shell: pip3 install patroni[{{ DCS }},aws]=={{ patroni_version }}
+    shell: pip3 install 'patroni[{{ DCS }},aws]=={{ patroni_version }}'
     tags: [patroni_install]
 
 # где-то не работало с более новыми версиями. может и не нужно.
   - name: install kazoo==2.6.1
-    shell: pip3 install -Iv kazoo==2.6.1
+    shell: pip3 install -Iv 'kazoo==2.6.1'
     tags: [patroni_install]
 
   when: psycopg_version == 2
@@ -201,6 +202,7 @@
 
   - name: update pip3
     shell: pip3 install --upgrade pip && hash -d pip3
+    ignore_errors: yes
     tags: [patroni_install]
 
   - name: update setuptools
@@ -218,11 +220,11 @@
 #    tags: [patroni_install]
 
   - name: install psycopg3
-    shell: pip3 install psycopg[binary]>=3.0.0
+    shell: pip3 install 'psycopg[binary]>=3.0.0'
     tags: [patroni_install]
 
   - name: install patroni
-    shell: pip3 install patroni[{{ DCS }},aws]=={{ patroni_version }}
+    shell: pip3 install 'patroni[{{ DCS }},aws]=={{ patroni_version }}'
     tags: [patroni_install]
 
 # где-то не работало с более новыми версиями. может и не нужно.

@@ -112,6 +112,12 @@
 - name: config /lib/systemd/system/pgagent.service
   template: src=pgagent.service dest=/lib/systemd/system/pgagent.service owner=root group=root mode=0600
 
+- name: cgroups config /lib/systemd/system/pgagent.service
+  command: sed -i '/^\[Service\]/a Slice=user.slice' /lib/systemd/system/pgagent.service
+  when: postgresql_cgroups == true
+  args:
+    warn: no
+
 - name: logrotate file
   template: src=pgagent.logrotate dest=/etc/logrotate.d/pgagent owner=root group=root mode=0644
 

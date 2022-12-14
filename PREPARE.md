@@ -68,3 +68,68 @@ vgs --units m -o vg_name,pv_name,pv_size,pv_free
 
 lvs --units m -o vg_name,lv_name,origin,lv_size,data_percent,mirror_log,devices
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+ansible_os_family == 'RedHat' Linux 8.4
+PG_VERSION_DOWNLOAD_URL: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-8.4-x86_64/"
+PG_COMMON_DOWNLOAD_URL:  'https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-8.4-x86_64/'
+
+ansible_os_family == 'RedHat' Linux 8.5
+PG_VERSION_DOWNLOAD_URL: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-8.5-x86_64/"
+PG_COMMON_DOWNLOAD_URL:  'https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-8.5-x86_64/'
+
+
+wget https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-8.5-x86_64/pgbouncer-1.17.0-10.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-8.5-x86_64/pg_cron_10-1.4.1-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-8.5-x86_64/pgagent_10-4.2.1-0.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-8.5-x86_64/pgpool-II-10-4.1.4-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-8.5-x86_64/pgpool-II-10-extensions-4.1.4-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-8.5-x86_64/pgpool-II-pg10-extensions-4.3.2-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-8.5-x86_64/postgresql10-libs-10.21-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-8.5-x86_64/postgresql10-10.21-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-8.5-x86_64/postgresql10-server-10.21-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-8.5-x86_64/postgresql10-contrib-10.21-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-8.5-x86_64/postgresql10-plperl-10.21-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-8.5-x86_64/postgresql10-devel-10.21-1PGDG.rhel8.x86_64.rpm
+
+wget https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-8.5-x86_64/pgbouncer-1.17.0-10.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.5-x86_64/pg_cron_12-1.4.1-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.5-x86_64/pgagent_12-4.2.1-0.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.5-x86_64/pgpool-II-12-4.1.4-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.5-x86_64/pgpool-II-12-extensions-4.1.4-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.5-x86_64/pgpool-II-pg12-extensions-4.3.2-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.5-x86_64/postgresql12-libs-12.9-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.5-x86_64/postgresql12-12.9-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.5-x86_64/postgresql12-server-12.9-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.5-x86_64/postgresql12-contrib-12.9-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.5-x86_64/postgresql12-plperl-12.9-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.5-x86_64/postgresql12-devel-12.9-1PGDG.rhel8.x86_64.rpm
+
+wget https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-8.5-x86_64/pgbouncer-1.17.0-10.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-8.5-x86_64/pgpool-II-4.3.2-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-8.5-x86_64/pgpool-II-pcp-4.3.2-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8.5-x86_64/pg_cron_14-1.4.1-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8.5-x86_64/pgagent_14-4.2.1-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8.5-x86_64/pgpool-II-pg14-extensions-4.3.2-1.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8.5-x86_64/postgresql14-libs-14.4-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8.5-x86_64/postgresql14-14.4-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8.5-x86_64/postgresql14-server-14.4-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8.5-x86_64/postgresql14-contrib-14.4-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8.5-x86_64/postgresql14-plperl-14.4-1PGDG.rhel8.x86_64.rpm
+wget https://download.postgresql.org/pub/repos/yum/14/redhat/rhel-8.5-x86_64/postgresql14-devel-14.4-1PGDG.rhel8.x86_64.rpm
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+wget https://github.com/etcd-io/etcd/releases/download/v3.2.25/etcd-v3.2.25-linux-amd64.tar.gz
+wget https://github.com/etcd-io/etcd/releases/download/v3.4.17/etcd-v3.4.17-linux-amd64.tar.gz
+wget https://github.com/etcd-io/etcd/releases/download/v3.5.4/etcd-v3.5.4-linux-amd64.tar.gz
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+https://dlcdn.apache.org/zookeeper/
+
+wget https://mirror.linux-ia64.org/apache/zookeeper/zookeeper-3.6.3/apache-zookeeper-3.6.3-bin.tar.gz
+wget https://mirror.linux-ia64.org/apache/zookeeper/zookeeper-3.7.1/apache-zookeeper-3.7.1-bin.tar.gz
+wget https://mirror.linux-ia64.org/apache/zookeeper/zookeeper-3.8.0/apache-zookeeper-3.8.0-bin.tar.gz
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+

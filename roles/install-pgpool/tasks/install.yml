@@ -59,6 +59,12 @@
     pgpool_service: "/lib/systemd/system/pgpool.service"
   when: postgresql_version|int >= 14
 
+- name: cgroups config /lib/systemd/system/pgpool.service
+  command: sed -i '/^\[Service\]/a Slice=user.slice' /lib/systemd/system/pgpool.service
+  when: postgresql_cgroups == true
+  args:
+    warn: no
+
 #- name: copy file pgpool.conf.sample-master-slave to {{ pgpool_config_path }}/pgpool.conf
 #  shell: "cp {{ pgpool_config_path }}/pgpool.conf.sample-master-slave {{ pgpool_config_path }}/pgpool.conf"
 #  args:

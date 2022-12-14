@@ -300,21 +300,6 @@
   when: (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
   tags: [postgres_preset]
 
-- name: generate crlogfiles.sh
-  template:
-    src: crlogfiles.sh
-    dest: "{{ postgresql_root_dir }}/crlogfiles.sh"
-    owner: postgres
-    group: postgres
-    mode: 0700
-  tags: [postgres_preset]
-
-- name: generate empty log files
-  shell: "{{ postgresql_root_dir }}/crlogfiles.sh"
-  args:
-     warn: no
-  tags: [postgres_preset]
-
 - name: check home admin 'foo' exists
   shell: sudo -iu postgres psql -p {{ postgresql_port }} -XAt -c "SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'foo'"
   register: pgfoo_rc
@@ -359,7 +344,6 @@
   when: pgedb_rc.stdout != "1"
   tags: [postgres_preset]
 
-# из скрипта pgedb.sql можно убрать создание пустых лог файлов, но функция hostname() важна для демо pgpool
 - name: Execute pgedb.sql
   shell: sudo -iu postgres psql -p {{ postgresql_port }} -d pgedb -f "{{ postgresql_root_dir }}/backups/pgedb.sql"
   when: pgedb_rc.stdout != "1"

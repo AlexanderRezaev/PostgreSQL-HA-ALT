@@ -11,11 +11,11 @@
 
 - name: install cgroup
   package: name=cgroup state=present
-  when: cgroups == true and (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
+  when: cgroups == true and cgroups_version == 'v1' and (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
 
 - name: install libcgroup
   package: name=libcgroup state=present
-  when: cgroups == true and (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
+  when: cgroups == true and cgroups_version == 'v1' and (ansible_distribution == 'ALT Server' or ansible_distribution == 'Altlinux')
 
 - name: cgconfig service start
   service: name=cgconfig state=started enabled=yes

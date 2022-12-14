@@ -16,6 +16,12 @@
 
 # вообще-то, пакет уже установлен. нужно сконфигурировать
 
+- name: cgroups config /lib/systemd/system/pgbouncer.service
+  command: sed -i '/^\[Service\]/a Slice=user.slice' /lib/systemd/system/pgbouncer.service
+  when: postgresql_cgroups == true
+  args:
+    warn: no
+
 - name: adding existing user postgres to group pgbouncer
   user:
     name: postgres

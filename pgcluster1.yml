@@ -9,7 +9,7 @@
 
       installation: online
       cgroups: true
-      cgroups_version: "v1"
+      cgroups_version: "v2"
 
       DCS: etcd3    # may be : etcd, etcd3, consul, zookeeper, exhibitor, kubernetes, raft
 #      DCS: zookeeper    # may be : etcd, etcd3, consul, zookeeper, exhibitor, kubernetes, raft
@@ -70,7 +70,8 @@
 #        - { type: host,    database: all,         user: all,     address: '0.0.0.0/0',      method: 'ldap ldapserver="lab-dc.lab.local lab-dc.lab.local" ldapprefix="" ldapsuffix="@LAB.LOCAL"',  tag: 'LDAP Authentification' }
 
       psycopg_version: 3
-      patroni_version: 2.1.2
+#      patroni_version: 2.1.2
+      patroni_version: 2.1.4
       patroni_src: "/root/packages/patroni/{{ patroni_version }}"
 
       patroni_namespace: "/patroni"

@@ -11,7 +11,7 @@
 #00 */1   * * *   /var/lib/pgsql/send_locks.sh
 
 ##### AUTO SHUTDOWN #####
-*    * * * *     /var/lib/pgsql/auto_shutdown.sh 1>/dev/null 2>&1 || true
+*    * * * *     /var/lib/pgsql/AutoShutdownPG.sh 1>/dev/null 2>&1 || true
 
 ##### STATE LOG #####
 *    * * * *     psql -p {{ postgresql_port }} -d pgedb -c "INSERT INTO public.log_connections( dt, connection_count ) SELECT clock_timestamp(), (SELECT count(*) FROM pg_stat_activity);" 1>/dev/null 2>&1 || true

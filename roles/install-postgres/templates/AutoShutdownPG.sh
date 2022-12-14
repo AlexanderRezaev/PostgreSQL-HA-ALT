@@ -8,7 +8,7 @@ LOG_FILE='/var/lib/pgsql/AutoShutdownPG.log'
 DiskUsageLimit=95
 
 pgIsActive=$(systemctl is-active patroni)
-percentUsed1=$(df -h | grep "/dev/mapper/cl-root" | awk {'print $5'} | sed s/%//g)
+percentUsed1=$(df -h / | grep "/" | awk {'print $5'} | sed s/%//g)
 percentUsed2=$(df -h | grep "/dev/mapper/postgresql_wal_vg-pg_wal" | awk {'print $5'} | sed s/%//g)
 percentUsed3=$(df -h | grep "/dev/mapper/postgresql_data_vg-pg_data" | awk {'print $5'} | sed s/%//g)
 
