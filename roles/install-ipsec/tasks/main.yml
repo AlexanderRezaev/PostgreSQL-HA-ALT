@@ -163,6 +163,14 @@
     tags: [ipsec_install]
 
   - name: check status ipsec
+    vars:
+      - ipsname_item: "{{ hostvars[item].ansible_set_fqdn }}"
+    debug: msg="tcpdump -c 20 host {{ ipsname_item }}"
+    when: item != inventory_hostname
+    with_items: "{{ groups['ipsec_enable'] }}"
+    tags: [ipsec_install]
+
+  - name: check status ipsec
     debug: msg="ipsec whack --trafficstatus"
     tags: [ipsec_install]
 
@@ -323,6 +331,10 @@
     debug: msg="tcpdump -c 20 host {{ ipsname_item }}"
     when: item != inventory_hostname
     with_items: "{{ groups['ipsec_enable'] }}"
+    tags: [ipsec_install]
+
+  - name: check status ipsec
+    debug: msg="ipsec status"
     tags: [ipsec_install]
 
   when: libreswan_rc.failed == true and strongswan_rc.failed == false
